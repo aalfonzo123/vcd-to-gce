@@ -1,0 +1,14 @@
+login: login
+password: password
+org: hex-org-id
+vdc: vdc-name
+vcloud_url: fqdn-with-no-https-prefix
+catalog: sample-catalog
+bucket: gcp-bucket
+gcp_project: project-id-not-name
+gcp_vpc: vpc-name
+gcp_subnet: subnet-name
+zone: zone
+vm_list:
+  - vcd-vm-1
+  - vcd-vm-2
