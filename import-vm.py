@@ -9,7 +9,6 @@ config = None
 
 def parse_search(lines):
     elements = []
-    #with open(filename, 'r') as file:
     pos = 0
     for line in lines:
         pos += 1
@@ -70,13 +69,13 @@ def remove_ovf_collection(vm):
     os.remove(old)
 
 def upload_to_bucket(vm):
-    print("uploading to bucket")
+    print("* uploading to bucket")
     result = subprocess.run(["gcloud", "storage", "cp", "--recursive", vm, "gs://{0}".format(config['bucket'])], stdout=sys.stdout, stderr=subprocess.STDOUT)
     if result.returncode != 0:
         raise Exception("run failed, details:{0}".format(result))
 
 def start_import(vm):
-    print("starting import")
+    print("* starting import")
     result = subprocess.run(["gcloud", "compute", "instances", "import", vm, "--source-uri=gs://{0}/{1}".format(config['bucket'], vm), "--project", config['gcp_project'], "--network", config['gcp_vpc'], "--subnet", config['gcp_subnet'], "--zone", config['zone']], stdout=sys.stdout, stderr=subprocess.STDOUT)
     if result.returncode != 0:
         raise Exception("run failed, details:{0}".format(result))
@@ -92,9 +91,9 @@ def generate_vapp_template(vapp_name):
         raise Exception("run failed, details:{0}".format(result))
 
 def removedir(vm):
-#    result = subprocess.run(["rm", "{0}/*".format(vm)], stdout=sys.stdout, stderr=subprocess.STDOUT)
-#    if result.returncode != 0:
-#        raise Exception("run failed, details:{0}".format(result))
+    result = subprocess.run(["rm", "{0}/*".format(vm)], stdout=sys.stdout, stderr=subprocess.STDOUT)
+    if result.returncode != 0:
+        raise Exception("run failed, details:{0}".format(result))
     os.rmdir(vm)
 
 def main():
@@ -104,13 +103,13 @@ def main():
     vcd_login()
     for vm in config['vm_list']:
         print("--- processing VM {0}".format(vm))
-        #vapp_name = get_hidden_vapp_name(vm)
-        #generate_vapp_template(vapp_name)
-        #os.makedirs(vm)
-        #run_ovftool(vm, vapp_name)
-        #remove_ovf_collection(vm)
-        #upload_to_bucket(vm)
-        #removedir(vm)
+        vapp_name = get_hidden_vapp_name(vm)
+        generate_vapp_template(vapp_name)
+        os.makedirs(vm)
+        run_ovftool(vm, vapp_name)
+        remove_ovf_collection(vm)
+        upload_to_bucket(vm)
+        removedir(vm)
         start_import(vm)
     return 0
 
